@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+body {
+  background-image: url(./assets/pcBg.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: right;
+  overflow: hidden;
+}
+
+
+.mapboxgl-canvas-container, .mapboxgl-canvas{
+  height: 100% !important;
+  width: 100% !important;
+}
+.marker{
+  background-image: url('../public/marker.png');
+  background-size: cover;
+  width: 30px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
