@@ -142,24 +142,6 @@ const Login = () => {
                 “Log into your account”
               </Typography>
               <Grid container justifyContent="center" spacing={3}>
-                <Grid item mobile={11} tablet={8.5} laptop={6}>
-                  <CssTextField
-                    label="Phone"
-                    variant="outlined"
-                    fullWidth
-                    type={"number"}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </Grid>
-                <Grid item mobile={11} tablet={8.5} laptop={6}>
-                  <CssTextField
-                    label="Password"
-                    variant="outlined"
-                    fullWidth
-                    type={"password"}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </Grid>
               </Grid>
               <Typography
                 variant="h6"
