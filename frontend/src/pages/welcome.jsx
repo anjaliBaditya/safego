@@ -58,19 +58,6 @@ const Welcome = () => {
             >
               GOSAFE
             </Typography>
-            <Typography
-              variant="h6"
-              color="primary.contrastText"
-              sx={{
-                fontStyle: "italic",
-                letterSpacing: "0.1rem",
-                textAlign: "center",
-                textShadow: "0px 5px 4px rgba(0, 0, 0, 0.36)",
-                mb: 7.5,
-              }}
-            >
-              “We are here for you”
-            </Typography>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-5 mt-10">
               <Button
                 variant="contained"
