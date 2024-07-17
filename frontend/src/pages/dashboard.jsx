@@ -43,58 +43,66 @@ export default function LabTabs() {
       sx={{ width: "100%", typography: "body1", height: "100vh" }}
       className="!bg-[#fff]"
     >
-      <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider", zIndex: 15 }}>
-          <TabList
-            onChange={handleChange}
-            aria-label="lab API tabs example"
-            centered
-            indicatorColor="white"
-            sx={{
-              backgroundColor: "#13724A",
-              "& .MuiTab-root": {
-                color: "#fff !important",
-              },
-              "& .Mui-selected": {
-                borderBottom: "3px solid #fff",
-              },
-            }}
-          >
-            <Tab
-              label="BMC ADMIN PORTAL"
-              value="0"
-              sx={{
-                width: "400px",
-                marginLeft: "-150px",
-                fontSize: "20px",
-              }}
-            />
-            <Tab
-              label="Map Data"
-              value="1"
-              sx={{
-                width: "150px",
-                margin: "0px 50px",
-              }}
-            />
-            <Tab
-              label="Incoming Reports"
-              value="2"
-              sx={{
-                width: "200px",
-                margin: "0px 50px",
-              }}
-            />
-            <Tab
-              label="Resolved Reports"
-              value="3"
-              sx={{
-                width: "200px",
-                margin: "0px 50px",
-              }}
-            />
-          </TabList>
-        </Box> 
+    <TabPanel
+    value="1"
+    sx={{
+      "&.MuiTabPanel-root": {
+        padding: 0,
+      },
+    }}
+  >
+    <div
+      ref={mapContainer}
+      className="map-container w-[100vw] h-[94vh] inset-0 -z-5"
+    />
+    <StyledPopover
+      id={id}
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handleClose}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+    >
+      <h1
+        style={{
+          color: "#fff",
+          fontSize: "1.1rem",
+        }}
+      >
+        Highway, Vile Parle (E)
+      </h1>
+      <h3
+        style={{
+          color: "#fff",
+          fontSize: "0.8rem",
+        }}
+      >
+        by Eshan Trivedi
+      </h3>
+    </StyledPopover>
+  </TabPanel>
+  <TabPanel value="2">
+  <Stack spacing={2}>
+    {locationUn ? (
+      locationUn.map((item) => (
+        <Item className="!bg-[#165C3F] !drop-shadow-xl !border" key={item._id}>
+          <Stat
+            image={item.Image}
+            username={item.by.Username}
+            key={item._id}
+            id={item._id}
+            setRefresh={setRefresh}
+            location={`${item.lng}, ${item.lat}`}
+          />
+        </Item>
+      ))
+    ) : (
+      <h1>Loading...</h1>
+    )}
+  </Stack>
+</TabPanel>
     </Box>
   );
 }
