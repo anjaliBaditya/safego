@@ -161,6 +161,25 @@ export default function Home() {
             });
         });
       }, []);
+
+      useEffect(() => {
+        if (map.current) return;
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: "mapbox://styles/mapbox/streets-v12",
+          center: [lng, lat],
+          zoom: zoom,
+        });
+        navigator.geolocation.getCurrentPosition((position) => {
+          const el = document.createElement("div");
+          el.className = "marker";
+          console.log(position.coords.latitude, position.coords.longitude);
+          new mapboxgl.Marker(el)
+            .setLngLat([position.coords.longitude, position.coords.latitude])
+            .addTo(map.current);
+        });
+      }, []);
+    
   }
   return (
     <Theme>
