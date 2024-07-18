@@ -179,7 +179,51 @@ export default function Home() {
             .addTo(map.current);
         });
       }, []);
-    
+      function addTrafficRoute(coords) {
+        if (map.current.getSource("traffic-route")) {
+          map.current.removeLayer("traffic-route");
+          map.current.removeSource("traffic-route");
+        } else {
+          map.current.addLayer({
+            id: "traffic-route",
+            type: "heatmap",
+            source: {
+              type: "geojson",
+              data: coords,
+            },
+            paint: {
+              "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0,
+                1,
+                9,
+                3,
+              ],
+              "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0,
+                "rgba(33,102,172,0)",
+                0.2,
+                "rgb(103,169,207)",
+                0.4,
+                "rgb(209,229,240)",
+                0.6,
+                "rgb(253,219,199)",
+                0.8,
+                "rgb(239,138,98)",
+                1,
+                "rgb(178,24,43)",
+              ],
+              "heatmap-radius": 10,
+              "heatmap-opacity": 1,
+            },
+          });
+        }
+      }
   }
   return (
     <Theme>
@@ -207,6 +251,29 @@ export default function Home() {
                 fullWidth
                 disabled
                 sx={{ width: "75vw", ml: 2 }}
+                onChange={(e) => {
+                  setText(e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <svg
+                width="22"
+                height="25"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                fill="white"
+              >
+                <path d="M306.7 325.1L162.4 380.6C142.1 388.1 123.9 369 131.4 349.6L186.9 205.3C190.1 196.8 196.8 190.1 205.3 186.9L349.6 131.4C369 123.9 388.1 142.1 380.6 162.4L325.1 306.7C321.9 315.2 315.2 321.9 306.7 325.1V325.1zM255.1 224C238.3 224 223.1 238.3 223.1 256C223.1 273.7 238.3 288 255.1 288C273.7 288 288 273.7 288 256C288 238.3 273.7 224 255.1 224V224zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z" />
+              </svg>
+              <CssTextField
+                id="outlined-basic"
+                label="To"
+                variant="outlined"
+                size="small"
+                fullWidth
+                sx={{ width: "75vw", ml: 2 }}
+                value={text}
                 onChange={(e) => {
                   setText(e.target.value);
                 }}
