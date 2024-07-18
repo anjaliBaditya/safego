@@ -47,7 +47,7 @@ const CssTextField = styled(TextField)({
 });
 
 mapboxgl.accessToken =
-  "TOKEN";
+  "pk.eyJ1IjoiZXNoYW50cml2ZWRpMjEiLCJhIjoiY2xjaXV6c2lqMTFzNjNvcXVmbzM0aGkwNyJ9.ZsRWT2z--97ajM58KQG4xQ";
 
 export default function Home() {
   const [progress, setProgress] = React.useState(0);
@@ -137,94 +137,134 @@ export default function Home() {
           "line-opacity": 0.8,
         },
       });
-
-
     }
-
-    useEffect(() => {
-        if (!map.current) return;
-        map.current.on("load", () => {
-          axios
-            .get(
-              `https://api.mapbox.com/traffic-data/v1/flow?coordinates=${72.884217},${19.150826};${72.829198},${19.106933}`,
-              {
-                params: {
-                  access_token: mapboxgl.accessToken,
-                },
-                withCredentials: false,
-              }
-            )
-            .then((res) => {
-              console.log(res);
-              const geojson = res.data;
-              addTrafficRoute(geojson);
-            });
-        });
-      }, []);
-
-      useEffect(() => {
-        if (map.current) return;
-        map.current = new mapboxgl.Map({
-          container: mapContainer.current,
-          style: "mapbox://styles/mapbox/streets-v12",
-          center: [lng, lat],
-          zoom: zoom,
-        });
-        navigator.geolocation.getCurrentPosition((position) => {
-          const el = document.createElement("div");
-          el.className = "marker";
-          console.log(position.coords.latitude, position.coords.longitude);
-          new mapboxgl.Marker(el)
-            .setLngLat([position.coords.longitude, position.coords.latitude])
-            .addTo(map.current);
-        });
-      }, []);
-      function addTrafficRoute(coords) {
-        if (map.current.getSource("traffic-route")) {
-          map.current.removeLayer("traffic-route");
-          map.current.removeSource("traffic-route");
-        } else {
-          map.current.addLayer({
-            id: "traffic-route",
-            type: "heatmap",
-            source: {
-              type: "geojson",
-              data: coords,
-            },
-            paint: {
-              "heatmap-intensity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0,
-                1,
-                9,
-                3,
-              ],
-              "heatmap-color": [
-                "interpolate",
-                ["linear"],
-                ["heatmap-density"],
-                0,
-                "rgba(33,102,172,0)",
-                0.2,
-                "rgb(103,169,207)",
-                0.4,
-                "rgb(209,229,240)",
-                0.6,
-                "rgb(253,219,199)",
-                0.8,
-                "rgb(239,138,98)",
-                1,
-                "rgb(178,24,43)",
-              ],
-              "heatmap-radius": 10,
-              "heatmap-opacity": 1,
-            },
-          });
-        }
-      }
   }
+  useEffect(() => {
+    setProgress(Math.floor(Math.random() * (90 - 60 + 1) + 60));
+    if (progress >= 80) {
+      setColor("#2aa10f");
+    } else if (progress >= 70) {
+      setColor("#ffaa1c");
+    } else if (progress >= 60) {
+      setColor("#ed2938");
+    }
+  }, [progress, routeData]);
+
+  function clickHandler() {
+    document.querySelector(".searchDiv").style.display = "none";
+  }
+  React.useEffect(() => {
+    if (text.length !== 0) {
+      if (document.querySelector(".searchDiv").style.display === "none") {
+        document.querySelector(".searchDiv").style.display = "block";
+      }
+    }
+  }, [text]);
+
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const [lng, setLng] = useState(72.8777);
+  const [lat, setLat] = useState(19.076);
+  const [zoom, setZoom] = useState(9);
+  let [a, setA] = React.useState(null);
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (!a) {
+      apiCheckLogin(setA);
+    }
+  }, []);
+  React.useEffect(() => {
+    if (a) {
+      if (a.err) {
+        navigate("/welcome");
+      }
+    }
+  }, [a]);
+  function addTrafficRoute(coords) {
+    if (map.current.getSource("traffic-route")) {
+      map.current.removeLayer("traffic-route");
+      map.current.removeSource("traffic-route");
+    } else {
+      map.current.addLayer({
+        id: "traffic-route",
+        type: "heatmap",
+        source: {
+          type: "geojson",
+          data: coords,
+        },
+        paint: {
+          "heatmap-intensity": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0,
+            1,
+            9,
+            3,
+          ],
+          "heatmap-color": [
+            "interpolate",
+            ["linear"],
+            ["heatmap-density"],
+            0,
+            "rgba(33,102,172,0)",
+            0.2,
+            "rgb(103,169,207)",
+            0.4,
+            "rgb(209,229,240)",
+            0.6,
+            "rgb(253,219,199)",
+            0.8,
+            "rgb(239,138,98)",
+            1,
+            "rgb(178,24,43)",
+          ],
+          "heatmap-radius": 10,
+          "heatmap-opacity": 1,
+        },
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (map.current) return;
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/streets-v12",
+      center: [lng, lat],
+      zoom: zoom,
+    });
+    navigator.geolocation.getCurrentPosition((position) => {
+      const el = document.createElement("div");
+      el.className = "marker";
+      console.log(position.coords.latitude, position.coords.longitude);
+      new mapboxgl.Marker(el)
+        .setLngLat([position.coords.longitude, position.coords.latitude])
+        .addTo(map.current);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!map.current) return;
+    map.current.on("load", () => {
+      axios
+        .get(
+          `https://api.mapbox.com/traffic-data/v1/flow?coordinates=${72.884217},${19.150826};${72.829198},${19.106933}`,
+          {
+            params: {
+              access_token: mapboxgl.accessToken,
+            },
+            withCredentials: false,
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          const geojson = res.data;
+          addTrafficRoute(geojson);
+        });
+    });
+  }, []);
+
   return (
     <Theme>
       <div className="h-[100vh] w-full flex flex-col justify-center items-center">
@@ -279,33 +319,85 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="flex justify-center items-center">
-              <svg
-                width="22"
-                height="25"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                fill="white"
+          </div>
+          {text.length !== 0 ? (
+            <div
+              className="searchDiv absolute top-[18vh] z-10 w-[95vw] flex flex-col justify-center items-center rounded-lg"
+              onClick={clickHandler}
+            >
+              <Button
+                type="submit"
+                id="search--div"
+                className="searchLoc"
+                variant="contained"
+                sx={{
+                  width: "95vw",
+                  fontSize: "1rem",
+                }}
+                onClick={search}
               >
-                <path d="M306.7 325.1L162.4 380.6C142.1 388.1 123.9 369 131.4 349.6L186.9 205.3C190.1 196.8 196.8 190.1 205.3 186.9L349.6 131.4C369 123.9 388.1 142.1 380.6 162.4L325.1 306.7C321.9 315.2 315.2 321.9 306.7 325.1V325.1zM255.1 224C238.3 224 223.1 238.3 223.1 256C223.1 273.7 238.3 288 255.1 288C273.7 288 288 273.7 288 256C288 238.3 273.7 224 255.1 224V224zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z" />
-              </svg>
-              <CssTextField
-                id="outlined-basic"
-                label="To"
-                variant="outlined"
-                size="small"
-                fullWidth
-                sx={{ width: "75vw", ml: 2 }}
-                value={text}
-                onChange={(e) => {
-                  setText(e.target.value);
+                Find Best Route
+              </Button>
+            </div>
+          ) : null}
+        </div>
+        <div ref={mapContainer} className="map-container w-full h-full" />
+        <div className="absolute bottom-[8vh] bg-[#13724A] z-10 w-[95vw] h-[10vh] flex flex-col justify-center items-center rounded-lg  gap-3">
+          <div
+            onClick={() => navigate("/cam")}
+            className="border-2 border-[#13724A] absolute -top-8 bg-white w-[70px] h-[70px] flex flex-col justify-center items-center rounded-full"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="#13724A"
+              viewBox="0 0 512 512"
+              className="w-[60%] h-auto m-auto"
+            >
+              <path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 384c-53 0-96-43-96-96s43-96 96-96s96 43 96 96s-43 96-96 96z" />
+            </svg>
+          </div>
+          {routeData ? (
+            <div className="flex justify-center items-center w-[95vw] gap-3 mt-5">
+              <h2
+                style={{
+                  color: "#fff",
+                  fontSize: "1.1rem",
+                  letterSpacing: "1px",
+                  fontWeight: "600",
+                }}
+              >
+                RQI :
+              </h2>
+              <LinearProgress
+                variant="determinate"
+                value={progress}
+                sx={{
+                  backgroundColor: "#cfcfcf",
+                  "& .MuiLinearProgress-bar": {
+                    backgroundColor: color,
+                  },
+                  width: "75%",
+                  height: "10px",
+                  borderRadius: "10px",
                 }}
               />
             </div>
-          </div>
-          
+          ) : null}
         </div>
-      
+        <div className="absolute bottom-3 bg-[#13724A] z-10 w-[95vw] h-[5vh] flex flex-col justify-center items-center rounded-lg  gap-3">
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              width: "95vw",
+              fontSize: "1rem",
+            }}
+            onClick={() => navigate("/profile")}
+          >
+            My Profile
+          </Button>
+        </div>
+      </div>
     </Theme>
   );
 }
